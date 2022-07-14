@@ -11,7 +11,7 @@ interface State {
   deleteAllTodo: () => void;
 }
 
-const useTodos = create<State>((set, get) => ({
+const useTodos = create<State>((set) => ({
   loading: true,
   loaded: false,
   error: "",
