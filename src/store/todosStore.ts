@@ -2,13 +2,6 @@ import { Todo } from "types";
 import axios from "utils/axios";
 import create from "zustand";
 
-const initialState = {
-  loading: true,
-  loaded: false,
-  error: "",
-  todos: [],
-};
-
 interface State {
   loading: boolean;
   loaded: boolean;
@@ -19,13 +12,16 @@ interface State {
 }
 
 const useTodos = create<State>((set, get) => ({
-  ...initialState,
+  loading: true,
+  loaded: false,
+  error: "",
+  todos: [],
   deleteAllTodo() {
     set({ todos: [], loaded: false });
   },
   fetchTodos: async () => {
     try {
-      set(initialState);
+      set({ loading: true, loaded: false, error: "", todos: [] });
       const todos: Todo[] = await (await axios("/todos")).data;
       set({ todos, loading: false, loaded: todos.length > 0 });
     } catch (e) {
