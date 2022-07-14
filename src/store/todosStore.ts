@@ -1,6 +1,7 @@
 import { Todo } from "types";
 import axios from "utils/axios";
-import create from "zustand";
+import create, { SetState } from "zustand";
+import { log } from "middleware/logger";
 
 interface State {
   loading: boolean;
@@ -11,28 +12,30 @@ interface State {
   deleteAllTodo: () => void;
 }
 
-const useTodos = create<State>((set) => ({
-  loading: true,
-  loaded: false,
-  error: "",
-  todos: [],
-  deleteAllTodo() {
-    set({ todos: [], loaded: false });
-  },
-  fetchTodos: async () => {
-    try {
-      set({ loading: true, loaded: false, error: "", todos: [] });
-      const todos: Todo[] = await (await axios("/todos")).data;
-      set({ todos, loading: false, loaded: todos.length > 0 });
-    } catch (e) {
-      set({
-        loading: false,
-        loaded: false,
-        todos: [],
-        error: "Ошибка: Что то пошло не так",
-      });
-    }
-  },
-}));
+const useTodos = create<State>(
+  log((set: SetState<State>) => ({
+    loading: true,
+    loaded: false,
+    error: "",
+    todos: [],
+    deleteAllTodo() {
+      set({ todos: [], loaded: false });
+    },
+    fetchTodos: async () => {
+      try {
+        set({ loading: true, loaded: false, error: "", todos: [] });
+        const todos: Todo[] = await (await axios("/todos")).data;
+        set({ todos, loading: false, loaded: todos.length > 0 });
+      } catch (e) {
+        set({
+          loading: false,
+          loaded: false,
+          todos: [],
+          error: "Ошибка: Что то пошло не так",
+        });
+      }
+    },
+  }))
+);
 
 export default useTodos;
